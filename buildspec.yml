@@ -2,18 +2,25 @@ version: 0.2
 
 env:
   variables:
-    PROJECT: Test123
-    DOTNET: 3.0
+    PROJECT: sampleCore
+    DOTNET: 3.1
 phases:
     install:
         runtime-versions:
-            dotnet: 3.0
-  
+            dotnet: 3.1
+        
     build:
         commands:
-          #- dotnet build -c Release Test123.csproj
-           - msbuild Test123.csproj /p:TargetFrameworkVersion=v4.6.1 /p:Configuration=Release /p:DeployIisAppPath="Default Web Site" /p:PackageAsSingleFile=false /p:OutDir=C:\codebuild\artifacts\ /t:Package
+           - echo Build started  on `date`
+           - dotnet restore
+           - dotnet build -c Release ./SampleWebAPI.csproj
+           - dotnet publish -c release -o ./build_output SampleWebAPI.csproj
+          # - dotnet test -c Release ./CoreWithNUnit.Test/CoreWithNUnit.Test.csproj
+           #- nuget restore
+           #- dotnet vstest CoreWithNUnit.Test/bin/Debug/netcoreapp2.1/CoreWithNUnit.Test.dll
+           
 artifacts:
-  files:
-    - '**/*'
-  base-directory: 'C:\codebuild\artifacts\_PublishedWebsites\${env:PROJECT}_Package\Archive\'
+ files:
+    - sampleCore/build_output/**/*
+    - scripts/**/*
+    - appspec.yml    
